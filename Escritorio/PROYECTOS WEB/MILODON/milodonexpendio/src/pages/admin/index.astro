@@ -1,0 +1,20 @@
+---
+// src/pages/admin/index.astro
+import AdminApp from '../../components/admin/AdminApp';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Administración - Milodon Vending</title>
+  </head>
+  <body class="bg-gray-50 text-gray-900 font-sans">
+    <AdminApp client:only="react" />
+  </body>
+</html>
+
+<style is:global>
+  @import "../../styles/global.css";
+</style>
