@@ -1,6 +1,7 @@
 ---
 // src/layouts/Layout.astro
 import '../styles/global.css';
+
 interface Props {
   title: string;
 }
@@ -9,29 +10,61 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es" class="bg-black">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    {/* Configuración crítica para el modo Kiosko en Android 5.1.1 */}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <title>{title}</title>
   </head>
-  <body class="bg-slate-900 text-slate-100 overflow-hidden touch-none select-none font-sans">
+  <body class="bg-black text-slate-100 overflow-hidden touch-none select-none font-sans antialiased">
     <slot />
   </body>
 </html>
 
 <style is:global>
-  /* Optimizaciones táctiles para el quiosco */
+  /* Reset industrial Pitch Black */
+  :root {
+    color-scheme: dark;
+    background-color: #000000;
+  }
+
+  /* Desactivar comportamientos nativos de tablet Android */
   * {
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
   }
-  
-  /* Animación suave de entrada por CSS (Acelerada por GPU) */
+
+  /* Ocultar scrollbars globalmente */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animación de entrada optimizada para GPU Mali-T764 */
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { 
+      opacity: 0; 
+      transform: scale(0.98) translateY(10px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1) translateY(0); 
+    }
   }
+
   .animate-fade-in {
-    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+    will-change: opacity, transform;
+  }
+
+  /* Fix para evitar el rebote elástico (overscroll) en Chrome/WebView antiguo */
+  html, body {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    overflow: hidden;
   }
 </style>

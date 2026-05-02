@@ -1,25 +1,30 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
+import legacy from '@vitejs/plugin-legacy'; // <-- 1. IMPORTACIÓN AÑADIDA
 
 export default defineConfig({
   // Inyectamos React para la interactividad del carrito
   integrations: [react()],
 
-  // Configuramos Tailwind a través del nuevo ecosistema Vite 7
+  // Configuramos Tailwind y el Transpilador Legacy
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      // <-- 2. EL SALVAVIDAS PARA EL PANTALLAZO BLANCO EN RK3288 -->
+      legacy({
+        targets: ['chrome >= 39', 'android >= 5.1'],
+        additionalLegacyPolyfills: ['regenerator-runtime/runtime']
+      })
+    ],
   },
 
   // 1. BLINDAJE DE SEGURIDAD (CSP)
-  // Genera hashes automáticamente para scripts/estilos dinámicos
   security: {
     csp: {
       directives: [
         "default-src 'self'",
-        // Permitimos imágenes desde Supabase u otros CDNs
         "img-src 'self' data: https:", 
-        // Permitimos conexiones a la API de Supabase
         "connect-src 'self' https://*.supabase.co" 
       ],
     },
@@ -28,12 +33,11 @@ export default defineConfig({
   // 2. RENDIMIENTO DE HARDWARE (RK3288)
   experimental: {
     queuedRendering: {
-      enabled: true, // Optimiza el uso de RAM al renderizar
+      enabled: true, 
     },
   },
 
   // 3. TIPOGRAFÍAS OFFLINE-FIRST
-  // Astro descargará la fuente y la servirá localmente
   fonts: [
     {
       name: 'Roboto',
